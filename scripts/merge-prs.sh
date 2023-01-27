@@ -13,6 +13,15 @@ do
     fi
 done
 
+do 
+    contains_failure=$(gh pr view "$pr" --json statusCheckRollup | jq -r '.[] | .[] | select(.name == "verify-gentx") | .conclusion' | grep -c FAILURE)
+    if [[ $contains_failure -eq 0 ]]; then
+        SUCCESSFUL_PRS+=" ${pr}"
+    else
+        echo "contains failure ${pr}"
+    fi
+done
+
 for success in $SUCCESSFUL_PRS
 do 
     # TODO: check that addition is a new JSON file
